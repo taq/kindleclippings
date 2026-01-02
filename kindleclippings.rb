@@ -58,19 +58,25 @@ File.open(file).each do |line|
 
   if title
     matches = line.match(title_exp)
-    title   = false
-    date    = true
-    bref    = line
-    books[bref] ||= Book.new(matches[:title], matches[:author])
-    next
+
+    if matches
+      title   = false
+      date    = true
+      bref    = line
+      books[bref] ||= Book.new(matches[:title], matches[:author])
+      next
+    end
   end
 
   if date
     matches = line.match(pos_exp)
-    pref    = matches[:pos]
-    date    = false
-    books[bref].notes[pref] ||= Note.new(pref, [])
-    next
+
+    if matches
+      pref    = matches[:pos]
+      date    = false
+      books[bref].notes[pref] ||= Note.new(pref, [])
+      next
+    end
   end
 
   if line == '=========='
@@ -82,6 +88,8 @@ File.open(file).each do |line|
   end
 
   next if line.size < 1
+
+  next unless books[bref] && books[bref].notes[pref]
 
   books[bref].notes[pref].text << line
 end
